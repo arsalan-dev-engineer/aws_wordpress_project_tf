@@ -15,13 +15,15 @@ resource "aws_instance" "wp_instance_2a_1" {
     sudo chown -R apache.apache /var/www/html
     sudo setenforce 0
     sudo systemctl start httpd
-
     # Install MySQL client
     sudo yum install mysql -y
 
     # Connect to the MySQL RDS instance and perform database operations
-    mysql -h ${aws_db_instance.mysql_instance.endpoint} -u admin -admin24! -e "CREATE DATABASE wordpress;"
-    mysql -h ${aws_db_instance.mysql_instance.endpoint} -u admin -admin24! wordpress < /var/www/html/wp-admin/sql/upgrade-schema.mysql
+    mysql -h "${aws_db_instance.mysql_instance.endpoint}" -u admin -p admin246! -e "CREATE DATABASE wordpress;"
+
+    # Debugging
+    echo "MySQL Endpoint: ${aws_db_instance.mysql_instance.endpoint}" >> /var/log/user-data.log
+
     EOF
 }
 

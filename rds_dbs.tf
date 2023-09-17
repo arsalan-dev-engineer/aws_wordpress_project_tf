@@ -16,7 +16,7 @@ resource "aws_db_instance" "mysql_instance" {
   engine_version       = "5.7"         # MySQL version
   instance_class       = "db.t2.micro" # Instance type
   username             = "admin"       # Database username
-  password             = "admin24!"      # Database password
+  password             = "admin246!"      # Database password
   publicly_accessible  = true
   skip_final_snapshot  = true # Skip taking a final snapshot when deleting
 
