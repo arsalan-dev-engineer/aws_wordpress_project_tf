@@ -26,3 +26,4 @@ resource "aws_db_instance" "mysql_instance" {
   # Specify the subnet group for the RDS instance
   db_subnet_group_name = aws_db_subnet_group.mysql_subnet_group.name
 }
+

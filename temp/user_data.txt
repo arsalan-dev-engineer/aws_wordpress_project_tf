@@ -1,0 +1,37 @@
+  user_data = <<-EOF
+    #!/bin/bash
+
+    sudo yum install httpd php php-mysqlnd php-json wget -y
+    sudo wget https://wordpress.org/latest.tar.gz
+    tar -xzvf latest.tar.gz
+    sudo mv wordpress/* /var/www/html/
+    sudo chown -R apache.apache /var/www/html
+    sudo setenforce 0
+    sudo systemctl start httpd
+
+    # Install MySQL client
+    sudo yum install mysql -y
+
+    # Connect to the MySQL RDS instance and perform database operations
+    mysql_endpoint="${aws_db_instance.mysql_instance.endpoint}"
+    mysql_user="admin"
+    mysql_password="admin246!"
+
+    # Create a database
+    mysql -h "$mysql_endpoint" -u "$mysql_user" -p "$mysql_password" -e "CREATE DATABASE wordpress;"
+
+    # Configure WordPress to use the RDS database
+    cat <<EOL > /var/www/html/wp-config.php
+    <?php
+    define('DB_NAME', 'wordpress');
+    define('DB_USER', '$mysql_user');
+    define('DB_PASSWORD', '$mysql_password');
+    define('DB_HOST', '$mysql_endpoint');
+    EOL
+    EOF
+}
+
+# Output the MySQL RDS endpoint
+output "mysql_endpoint" {
+  value = aws_db_instance.mysql_instance.endpoint
+}
