@@ -4,31 +4,32 @@ resource "aws_launch_configuration" "wp_lt" {
   image_id        = "ami-028eb925545f314d6" # Replace with your desired AMI
   instance_type   = "t2.micro"              # Replace with your desired instance type
   key_name        = "wordpress-project-key-pair-tf"
+  associate_public_ip_address = true
   security_groups = [aws_security_group.allow_tls.id] # Replace with your SG ID
 
   user_data = <<-EOF
-  #!/bin/bash
+    #!/bin/bash
 
-  # Update the package list
-  sudo apt-get update -y
+    sudo yum install httpd php php-mysqlnd php-json wget -y
+    sudo wget https://wordpress.org/latest.tar.gz
+    tar -xzvf latest.tar.gz
+    sudo mv wordpress/* /var/www/html/
+    sudo chown -R apache.apache /var/www/html
+    sudo setenforce 0
+    sudo systemctl start httpd
 
-  # Install Nginx
-  sudo apt-get install nginx -y
+    # Install MySQL client
+    sudo yum install mysql -y
 
-  # Start the Nginx service
-  sudo systemctl start nginx
+    # Connect to the MySQL RDS instance and perform database operations
+    mysql_endpoint="${aws_db_instance.mysql_instance.endpoint}"
+    mysql_user="admin"
+    mysql_password="admin246!"
 
-  # Enable Nginx to start on boot
-  sudo systemctl enable nginx
+    # Create a database
+    mysql -h "$mysql_endpoint" -u "$mysql_user" -p "$mysql_password" -e "CREATE DATABASE wordpress;"
 
-  # Create a simple HTML file
-  sudo sh -c 'echo "<html><head><title>Welcome to My Website</title></head><body><h1>Hello from Nginx on EC2!</h1></body></html>" > /var/www/html/index.html'
-
-  # Set the correct permissions for the HTML file
-  sudo chown www-data:www-data /var/www/html/index.html
-
-  # Restart Nginx to apply changes
-  sudo systemctl restart nginx
-  EOF
+    EOL
+    EOF
 }
 
