@@ -1,9 +1,9 @@
 # main vpc
 resource "aws_vpc" "wp_vpc" {
-  cidr_block = "10.0.0.0/16"
-  enable_dns_support = true
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
   enable_dns_hostnames = true
-  
+
   tags = {
     name = "wordpress vpc"
   }
@@ -73,5 +73,61 @@ resource "aws_subnet" "private_subnet_2b" {
   tags = {
     name = "Private Subnet 2b"
   }
+}
+
+#  AZ 2a
+# Create a NAT Gateway and EIP for private subnet in AZ 2a
+resource "aws_nat_gateway" "wp_nat_gtw_2a" {
+  allocation_id = aws_eip.wp_nat_eip_2a.id
+  subnet_id     = aws_subnet.private_subnet_2a.id
+}
+
+# Create an Elastic IP for the NAT Gateway in AZ 2a
+resource "aws_eip" "wp_nat_eip_2a" {}
+
+# Create a default route in the private subnet's route table pointing to the NAT Gateway in AZ 2a
+resource "aws_route" "private_default_route_2a" {
+  route_table_id         = aws_route_table.private_route_table_2a.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.wp_nat_gtw_2a.id
+}
+
+# Route table for private subnet AZ 2a
+resource "aws_route_table" "private_route_table_2a" {
+  vpc_id = aws_vpc.wp_vpc.id
+}
+
+# Associate private route table with private subnet
+resource "aws_route_table_association" "private_subnet_association_2a" {
+  subnet_id      = aws_subnet.private_subnet_2a.id
+  route_table_id = aws_route_table.private_route_table_2a.id
+}
+
+# AZ 2b
+# Create a NAT Gateway and EIP for private subnet in AZ 2b
+resource "aws_nat_gateway" "wp_nat_gtw_2b" {
+  allocation_id = aws_eip.wp_nat_eip_2b.id
+  subnet_id     = aws_subnet.private_subnet_2b.id
+}
+
+# Create an Elastic IP for the NAT Gateway in AZ 2b
+resource "aws_eip" "wp_nat_eip_2b" {}
+
+# Create a default route in the private subnet's route table pointing to the NAT Gateway in AZ 2b
+resource "aws_route" "private_default_route_2b" {
+  route_table_id         = aws_route_table.private_route_table_2b.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.wp_nat_gtw_2b.id
+}
+
+# Route table for private subnet AZ 2b
+resource "aws_route_table" "private_route_table_2b" {
+  vpc_id = aws_vpc.wp_vpc.id
+}
+
+# Associate private route table with private subnet
+resource "aws_route_table_association" "private_subnet_association_2b" {
+  subnet_id      = aws_subnet.private_subnet_2b.id
+  route_table_id = aws_route_table.private_route_table_2b.id
 }
 
