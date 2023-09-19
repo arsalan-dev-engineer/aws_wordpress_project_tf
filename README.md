@@ -23,4 +23,14 @@ Deploy a Highly available WordPress website on AWS using public, private, and da
 -----
 
 ## VPC Resource Map
+![Project Architecture](https://github.com/Azzy001/aws_wordpress_project_tf/blob/449edcc8b017017e50a9669a39fe1e69fd216e2b/images/Mini-Project-Architect-Design.drawio.png)
+
+-----
+
+## VPC Resource Map
+![Graphviz architecture visualisation](https://github.com/Azzy001/aws_wordpress_project_tf/blob/449edcc8b017017e50a9669a39fe1e69fd216e2b/images/aws-terraform-graphviz.png)
+
+-----
+
+## VPC Resource Map
 ![vpc resource map](https://github.com/Azzy001/aws_wordpress_project_tf/blob/265fac9964708691a4bd369452c7f9ede83fe089/images/aws-vpc-resource-map.png)
